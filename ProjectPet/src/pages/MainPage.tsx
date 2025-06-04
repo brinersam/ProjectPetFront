@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from "react";
-import reactLogo from "../../assets/react.svg";
+import reactLogo from "../assets/react.svg";
 import viteLogo from "/vite.svg";
 import TicTacToe from "../components/TicTacToe/TicTacToe";
+import "./MainPage.css";
 
 export default function MainPage() {
   const [count, setCount] = useState(0);
