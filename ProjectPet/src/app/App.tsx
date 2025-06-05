@@ -6,15 +6,17 @@ import "./App.css";
 
 export default function App(): ReactNode {
   return (
-    <div className="flex-wrapper">
-      <div>
-        <Header />
-      </div>
-      <div>
-        <Outlet />
-      </div>
-      <div className="footer">
-        <Footer />
+    <div>
+      <div className="flex-wrapper">
+        <div>
+          <Header />
+        </div>
+        <div>
+          <Outlet />
+        </div>
+        <div className="footer">
+          <Footer />
+        </div>
       </div>
     </div>
   );

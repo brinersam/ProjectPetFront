@@ -6,10 +6,9 @@ export const darkTheme = createTheme(
             mode: "dark",
             primary: {
                 light: "#b093f5",
-                main: "#94c289",
+                main: "#628d62",
                 dark: "#3b33a5",
                 contrastText: "#ffffff"
-
             }
         }
     }
