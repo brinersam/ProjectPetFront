@@ -14,57 +14,35 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../app/Paths";
+import { useForm } from "react-hook-form";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  type FormField = "email" | "password";
-  type FormState = Record<FormField, string>;
-  const [formData, setFormData] = useState<FormState>({
-    email: "",
-    password: "",
-  });
-  const [formErrors, setFormErrors] = useState<FormState>({
-    email: "",
-    password: "",
-  });
-  const doesFormHaveErrors = Object.entries(formErrors).some(([key, value]) => {
-    return value;
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormFields>();
 
-  const handleFormChange = (key: FormField, value: string) => {
-    if (key == "email") {
-      setFormData((x) => ({ ...x, email: value }));
+  type FormFields = { email: string; password: string };
 
-      if (!value.includes("@") && value) {
-        setFormErrors((x) => ({ ...x, email: "Email is invalid" }));
-      } else {
-        setFormErrors((x) => ({ ...x, email: "" }));
-      }
-
-      return;
-    }
-
-    if (key == "password") {
-      setFormData((x) => ({ ...x, password: value }));
-    }
+  const validateEmailField = (value: string) => {
+    if (!value.includes("@") && value) return 'Email is invalid - missing "@"';
   };
 
-  const HandleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (doesFormHaveErrors) return;
-
-    console.log("Form submitted:", formData);
+  const OnSubmit = (data: FormFields) => {
+    console.log("Form submitted:", data);
   };
 
-  function formErrorHtml(key: FormField): ReactNode {
-    if (formErrors[key])
-      return (
-        <Typography variant="caption" color="error">
-          {formErrors[key]}
-        </Typography>
-      );
-    return <></>;
+  function formErrorHtml(error: string | undefined): ReactNode {
+    return !!error ? (
+      <Typography variant="caption" color="error">
+        {error}
+      </Typography>
+    ) : (
+      <></>
+    );
   }
 
   return <>{RenderHtml()}</>;
@@ -86,7 +64,7 @@ export default function LoginPage() {
         >
           <Grid
             component="form"
-            onSubmit={HandleSubmit}
+            onSubmit={handleSubmit(OnSubmit)}
             container
             sx={{ justifyContent: "center" }}
           >
@@ -171,7 +149,6 @@ export default function LoginPage() {
       >
         <Button
           type="submit"
-          disabled={doesFormHaveErrors}
           sx={{
             width: "100%",
           }}
@@ -204,10 +181,13 @@ export default function LoginPage() {
           <TextField
             placeholder="Email"
             required
-            onChange={(event) => handleFormChange("email", event.target.value)}
             id={label}
             type="text"
-            helperText={formErrorHtml("email")}
+            {...register("email", {
+              validate: validateEmailField,
+            })}
+            error={!!errors.email}
+            helperText={formErrorHtml(errors.email?.message)}
           />
         </FormControl>
       </Paper>
@@ -234,10 +214,8 @@ export default function LoginPage() {
           size="small"
         >
           <TextField
-            onChange={(event) =>
-              handleFormChange("password", event.target.value)
-            }
             required
+            {...register("password")}
             placeholder="Password"
             type={showPassword ? "text" : "password"}
             slotProps={{
