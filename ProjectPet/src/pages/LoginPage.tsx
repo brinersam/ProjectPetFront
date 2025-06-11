@@ -12,9 +12,13 @@ import { useState, type ReactNode } from "react";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
+import { useAuth } from "../context/AuthContext/AuthContext";
+import type { Envelope } from "../models/responses";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +27,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormFields>();
+  } = useForm<FormFields>({ mode: "onChange" });
 
   type FormFields = { email: string; password: string };
 
@@ -31,8 +35,21 @@ export default function LoginPage() {
     if (!value.includes("@") && value) return 'Email is invalid - missing "@"';
   };
 
-  const OnSubmit = (data: FormFields) => {
-    console.log("Form submitted:", data);
+  const { login, accessToken } = useAuth();
+  const navigate = useNavigate();
+
+  const OnSubmit = async (data: FormFields) => {
+    try {
+      await login(data.email, data.password);
+      navigate(PATHS.Profile);
+    } catch (Exception) {
+      toast("Error:" + Exception);
+      toast(
+        "Error:" +
+          (Exception as AxiosError<Envelope<any>>).response!.data.errors[0]
+            .message
+      );
+    }
   };
 
   function formErrorHtml(error: string | undefined): ReactNode {
@@ -68,6 +85,8 @@ export default function LoginPage() {
             container
             sx={{ justifyContent: "center" }}
           >
+            <div>{accessToken}</div>
+
             <TitleHtml />
             {EmailBoxHtml("Email,", 1)}
             {PasswordBoxHtml(1)}

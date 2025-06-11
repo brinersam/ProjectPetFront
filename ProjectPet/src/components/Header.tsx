@@ -3,17 +3,18 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Container, Switch } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../app/Paths";
+import { useAuth } from "../context/AuthContext/AuthContext";
 
 export default function Header(): ReactNode {
   return <HeaderHtml />;
 }
 
 function HeaderHtml(): ReactNode {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const { accessToken } = useAuth();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -68,11 +69,7 @@ function HeaderHtml(): ReactNode {
   function ProfileSectionHtml(): ReactNode {
     return (
       <div className="flex justify-between">
-        {isAuthenticated ? LoggedInHtml() : NotLoggedInHtml()}
-        <Switch
-          checked={isAuthenticated}
-          onClick={() => setIsAuthenticated(!isAuthenticated)}
-        />
+        {accessToken ? LoggedInHtml() : NotLoggedInHtml()}
       </div>
     );
   }
