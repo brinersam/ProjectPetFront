@@ -1,6 +1,6 @@
-import { AuthEndpoints } from "./endpoints";
-import type { Envelope } from "../models/responses";
-import { api, API_PATH } from "./axiosFactory";
+import { AuthEndpoints } from "../endpoints";
+import type { Envelope } from "../../models/responses";
+import { api, API_PATH } from "../axiosFactory";
 import axios from "axios";
 
 export type LoginResponse = {
@@ -25,6 +25,12 @@ export default class AuthService{
     {
         const response = await axios.post<Envelope<string>>(`${API_PATH}${AuthEndpoints.RefreshTokens}`, {}, {withCredentials: true});
         return response?.data;
+    }
+
+    static async Register(username:string, email:string, password:string) : Promise<any>
+    {
+        const response = await axios.post<Envelope<string>>(`${API_PATH}${AuthEndpoints.Register}`, {email, username, password});
+        return response;
     }
 
 }

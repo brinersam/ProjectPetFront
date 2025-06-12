@@ -1,7 +1,7 @@
 import type { InternalAxiosRequestConfig, AxiosError } from "axios";
 import { type ReactNode, useState, useEffect, useLayoutEffect } from "react";
 import { toast } from "react-toastify";
-import AuthService from "../../api/authEP";
+import AuthService from "../../api/Services/AuthService";
 import { api } from "../../api/axiosFactory";
 import type { Envelope } from "../../models/responses";
 import { type AuthData, AuthContext } from "./AuthContext";
