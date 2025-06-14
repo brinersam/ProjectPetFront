@@ -1,6 +1,6 @@
-import { TestEndpoints } from "./endpoints";
-import type { Envelope } from "../models/responses";
-import { api } from "./axiosFactory";
+import type { Envelope } from "../../models/responses";
+import { api } from "../axiosFactory";
+import type { TestEndpoints } from "../endpoints";
 
 export async function GetTestEPAsync(endpoint : TestEndpoints ) : Promise<Envelope<string[]>>
 {

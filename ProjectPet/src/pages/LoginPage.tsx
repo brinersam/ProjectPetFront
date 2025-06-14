@@ -1,26 +1,17 @@
-import {
-  Button,
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useState, type ReactNode } from "react";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { Grid, Paper, Typography } from "@mui/material";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { AxiosError } from "axios";
 import { useAuth } from "../context/AuthContext/AuthContext";
-import type { Envelope } from "../models/responses";
+import TitleLabel from "../components/RegistrationLogin/TitleLabel";
+import BasicButton from "../components/RegistrationLogin/BasicButton";
+import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
+import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import FormTextBox from "../components/Form/FormTextBox";
 
 export default function LoginPage() {
+  //#region Form
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -42,32 +33,18 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
       navigate(PATHS.Profile);
-    } catch (Exception) {
-      toast("Error:" + Exception);
-      toast(
-        "Error:" +
-          (Exception as AxiosError<Envelope<any>>).response!.data.errors[0]
-            .message
-      );
+    } catch (exception) {
+      ExceptionsHelper.ToastError(exception);
     }
   };
-
-  function formErrorHtml(error: string | undefined): ReactNode {
-    return !!error ? (
-      <Typography variant="caption" color="error">
-        {error}
-      </Typography>
-    ) : (
-      <></>
-    );
-  }
+  //#endregion
 
   return <>{RenderHtml()}</>;
 
   function RenderHtml() {
     return (
       <>
-        <BackToMainBtnHtml />
+        <BackToMainBtn />
         <Paper
           elevation={4}
           sx={{
@@ -87,34 +64,31 @@ export default function LoginPage() {
           >
             <div>{accessToken}</div>
 
-            <TitleHtml />
-            {EmailBoxHtml("Email,", 1)}
-            {PasswordBoxHtml(1)}
+            <TitleLabel label="Login" />
+            <FormTextBox<FormFields>
+              field="email"
+              label="Email"
+              style={{ elevation: 1 }}
+              validation={validateEmailField}
+              form={{ errors: errors, register: register }}
+            />
+            <FormTextBox<FormFields>
+              field="password"
+              label="Password"
+              style={{ elevation: 1 }}
+              form={{ errors: errors, register: register }}
+              hider={{
+                hiderBool: showPassword,
+                hiderOnClick: () => setShowPassword(!showPassword),
+              }}
+            />
             <Grid size={12} sx={{ justifyContent: "center" }}>
-              <ButtonHtml label="LogIn" />
+              <BasicButton label="LogIn" />
             </Grid>
             <RegistrationSuggestionHtml />
           </Grid>
         </Paper>
       </>
-    );
-  }
-
-  function BackToMainBtnHtml() {
-    return (
-      <Paper sx={{ width: "40%" }}>
-        <NavLink to={PATHS.Index}>
-          <ButtonHtml
-            label={
-              <>
-                <ArrowBackIosIcon />
-                Back to Main
-              </>
-            }
-            elevation={3}
-          />
-        </NavLink>
-      </Paper>
     );
   }
 
@@ -131,137 +105,6 @@ export default function LoginPage() {
           <NavLink to={PATHS.Registration}>Create one.</NavLink>
         </Typography>
       </Grid>
-    );
-  }
-
-  function TitleHtml() {
-    return (
-      <Typography
-        variant="h4"
-        sx={{
-          marginBottom: "2rem",
-          display: { md: "flex" },
-          fontFamily: "monospace",
-          fontWeight: 700,
-          color: "inherit",
-        }}
-      >
-        Login
-      </Typography>
-    );
-  }
-
-  function ButtonHtml({
-    label,
-    elevation = 0,
-  }: {
-    label: string | ReactNode;
-    elevation?: number;
-  }) {
-    return (
-      <Paper
-        sx={{
-          margin: "1rem",
-          width: "100%",
-        }}
-        elevation={elevation}
-      >
-        <Button
-          type="submit"
-          sx={{
-            width: "100%",
-          }}
-        >
-          {label}
-        </Button>
-      </Paper>
-    );
-  }
-
-  function EmailBoxHtml(label: string, elevation: number = 0) {
-    return (
-      <Paper
-        square={false}
-        elevation={elevation}
-        sx={{
-          padding: 1 + "%",
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <FormControl
-          sx={{
-            width: "100%",
-          }}
-          variant="filled"
-          size="small"
-        >
-          <TextField
-            placeholder="Email"
-            required
-            id={label}
-            type="text"
-            {...register("email", {
-              validate: validateEmailField,
-            })}
-            error={!!errors.email}
-            helperText={formErrorHtml(errors.email?.message)}
-          />
-        </FormControl>
-      </Paper>
-    );
-  }
-
-  function PasswordBoxHtml(elevation: number = 0) {
-    return (
-      <Paper
-        square={false}
-        elevation={elevation}
-        sx={{
-          padding: 1 + "%",
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <FormControl
-          sx={{
-            width: "100%",
-          }}
-          variant="filled"
-          size="small"
-        >
-          <TextField
-            required
-            {...register("password")}
-            placeholder="Password"
-            type={showPassword ? "text" : "password"}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={
-                        showPassword
-                          ? "hide the password"
-                          : "display the password"
-                      }
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
-                        <VisibilityIcon />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-        </FormControl>
-      </Paper>
     );
   }
 }
