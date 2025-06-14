@@ -9,7 +9,7 @@ import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
 import BasicButton from "../components/RegistrationLogin/BasicButton";
 import TitleLabel from "../components/RegistrationLogin/TitleLabel";
 import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
-import TextBoxHtml from "../components/RegistrationLogin/FormTextBox";
+import FormTextBox from "../components/Form/FormTextBox";
 
 export default function RegistrationPage(): ReactNode {
   //#region Form
@@ -62,7 +62,7 @@ export default function RegistrationPage(): ReactNode {
 
   //#region Tab
   const [tab, setTab] = useState(0);
-  const handleTabChange = (event: React.SyntheticEvent, newTab: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newTab: number) => {
     setTab(newTab);
   };
   //#endregion
@@ -104,14 +104,14 @@ export default function RegistrationPage(): ReactNode {
         container
         sx={{ justifyContent: "center" }}
       >
-        <TextBoxHtml<FormFields>
+        <FormTextBox<FormFields>
           field="username"
           label="Username"
           style={{ elevation: 1 }}
           form={{ errors: errors, register: register }}
         />
 
-        <TextBoxHtml<FormFields>
+        <FormTextBox<FormFields>
           field="email"
           label="Email"
           style={{ elevation: 1 }}
@@ -119,7 +119,7 @@ export default function RegistrationPage(): ReactNode {
           form={{ errors: errors, register: register }}
         />
 
-        <TextBoxHtml<FormFields>
+        <FormTextBox<FormFields>
           field="password"
           label="Password"
           style={{ elevation: 1 }}
@@ -130,7 +130,7 @@ export default function RegistrationPage(): ReactNode {
           }}
         />
 
-        <TextBoxHtml<FormFields>
+        <FormTextBox<FormFields>
           field="passwordConfirmation"
           label="Confirm password"
           style={{ elevation: 1 }}

@@ -39,7 +39,7 @@ type TextBoxProps<TFields extends FieldValues> = {
   style?: StyleProps;
 };
 
-export default function TextBoxHtml<TFields extends FieldValues>({
+export default function FormTextBox<TFields extends FieldValues>({
   field,
   label = undefined,
   form,

@@ -1,15 +1,5 @@
-import {
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useState, type ReactNode } from "react";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Grid, Paper, Typography } from "@mui/material";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
@@ -18,7 +8,7 @@ import TitleLabel from "../components/RegistrationLogin/TitleLabel";
 import BasicButton from "../components/RegistrationLogin/BasicButton";
 import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
 import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
-import TextBoxHtml from "../components/RegistrationLogin/FormTextBox";
+import FormTextBox from "../components/Form/FormTextBox";
 
 export default function LoginPage() {
   //#region Form
@@ -75,14 +65,14 @@ export default function LoginPage() {
             <div>{accessToken}</div>
 
             <TitleLabel label="Login" />
-            <TextBoxHtml<FormFields>
+            <FormTextBox<FormFields>
               field="email"
               label="Email"
               style={{ elevation: 1 }}
               validation={validateEmailField}
               form={{ errors: errors, register: register }}
             />
-            <TextBoxHtml<FormFields>
+            <FormTextBox<FormFields>
               field="password"
               label="Password"
               style={{ elevation: 1 }}
