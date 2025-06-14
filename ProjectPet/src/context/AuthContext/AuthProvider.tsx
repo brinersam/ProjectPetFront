@@ -5,6 +5,7 @@ import AuthService from "../../api/Services/AuthService";
 import { api } from "../../api/axiosFactory";
 import type { Envelope } from "../../models/responses";
 import { type AuthData, AuthContext } from "./AuthContext";
+import ExceptionsHelper from "../../app/Helpers/ExceptionsHelper";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | undefined>();
@@ -24,7 +25,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     const refreshIcptr = api.interceptors.response.use(
       (config) => config,
       async (error) => {
-        if (error.response.status == 401) {
+        if (error.response?.status == 401) {
           const originalRequest: InternalAxiosRequestConfig<any> = error.config;
 
           try {
@@ -36,12 +37,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
             return api(originalRequest);
           } catch (Exception) {
             setAccessToken(undefined);
-            toast("Error:" + Exception);
-            toast(
-              "Error:" +
-                (Exception as AxiosError<Envelope<AuthData>>).response!.data!
-                  .errors[0].message
-            );
+            ExceptionsHelper.ToastError(Exception);
           }
         }
         return Promise.reject(error);
@@ -55,12 +51,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const res = await AuthService.Login(email, password);
       setAccessToken(res.result.accessToken);
     } catch (Exception) {
-      toast("Error:" + Exception);
-      toast(
-        "Error:" +
-          (Exception as AxiosError<Envelope<AuthData>>).response!.data.errors[0]
-            .message
-      );
+      ExceptionsHelper.ToastError(Exception);
     }
   };
 

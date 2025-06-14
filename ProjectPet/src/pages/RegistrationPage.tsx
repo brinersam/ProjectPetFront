@@ -1,31 +1,28 @@
-import {
-  Button,
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  Tab,
-  Tabs,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Grid, Paper, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState, type ReactNode } from "react";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { AxiosError } from "axios";
-import type { Envelope } from "../models/responses";
 import AuthService from "../api/Services/AuthService";
+import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
+import BasicButton from "../components/RegistrationLogin/BasicButton";
+import TitleLabel from "../components/RegistrationLogin/TitleLabel";
+import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import TextBoxHtml from "../components/RegistrationLogin/FormTextBox";
 
 export default function RegistrationPage(): ReactNode {
+  //#region Form
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
     useState(false);
+
+  type FormFields = {
+    username: string;
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+  };
 
   const {
     register,
@@ -34,13 +31,6 @@ export default function RegistrationPage(): ReactNode {
     trigger,
     formState: { errors },
   } = useForm<FormFields>({ mode: "onChange" });
-
-  type FormFields = {
-    username: string;
-    email: string;
-    password: string;
-    passwordConfirmation: string;
-  };
 
   const passwordValue = watch("password");
   useEffect(() => {
@@ -59,43 +49,30 @@ export default function RegistrationPage(): ReactNode {
 
   const navigate = useNavigate();
 
-  const OnSubmit = async (data: FormFields) => {
+  const onSubmit = async (data: FormFields) => {
     try {
       await AuthService.Register(data.username, data.email, data.password);
       navigate(PATHS.Index);
       toast("Success!");
-    } catch (RawException) {
-      let Exception = RawException as AxiosError<Envelope<any>>;
-      let errorMessage: string | AxiosError | undefined =
-        Exception.response?.data?.errors[0]?.message;
-
-      if (errorMessage === undefined) errorMessage = Exception;
-
-      toast("Error:" + errorMessage);
+    } catch (exception) {
+      ExceptionsHelper.ToastError(exception);
     }
   };
+  //#endregion
 
+  //#region Tab
   const [tab, setTab] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newTab: number) => {
+  const handleTabChange = (event: React.SyntheticEvent, newTab: number) => {
     setTab(newTab);
   };
-
-  function formErrorHtml(error: string | undefined): ReactNode {
-    return !!error ? (
-      <Typography variant="caption" color="error">
-        {error}
-      </Typography>
-    ) : (
-      <></>
-    );
-  }
+  //#endregion
 
   return <>{RenderHtml()}</>;
 
   function RenderHtml() {
     return (
       <>
-        <BackToMainBtnHtml />
+        <BackToMainBtn />
         <Paper
           elevation={4}
           sx={{
@@ -108,8 +85,8 @@ export default function RegistrationPage(): ReactNode {
             maxHeight: "60rem",
           }}
         >
-          <TitleHtml />
-          <Tabs value={tab} onChange={handleChange} centered>
+          <TitleLabel label="Registration" />
+          <Tabs value={tab} onChange={handleTabChange} centered>
             <Tab label="Register as user" />
             <Tab label="Register as volunteer" />
           </Tabs>
@@ -123,60 +100,53 @@ export default function RegistrationPage(): ReactNode {
     return (
       <Grid
         component="form"
-        onSubmit={handleSubmit(OnSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         container
         sx={{ justifyContent: "center" }}
       >
-        {TextBoxHtml({
-          key: "username",
-          label: "UserName",
-          elevation: 1,
-        })}
-        {TextBoxHtml({
-          key: "email",
-          label: "Email",
-          elevation: 1,
-          validation: validateEmailField,
-        })}
-        {TextBoxHtml({
-          key: "password",
-          label: "Password",
-          elevation: 1,
-          hiderBool: showPassword,
-          hiderOnclick: () => setShowPassword(!showPassword),
-        })}
-        {TextBoxHtml({
-          key: "passwordConfirmation",
-          label: "Confirm password",
-          elevation: 1,
-          validation: validatePasswordConfirmation,
-          hiderBool: showPasswordConfirmation,
-          hiderOnclick: () =>
-            setShowPasswordConfirmation(!showPasswordConfirmation),
-        })}
+        <TextBoxHtml<FormFields>
+          field="username"
+          label="Username"
+          style={{ elevation: 1 }}
+          form={{ errors: errors, register: register }}
+        />
+
+        <TextBoxHtml<FormFields>
+          field="email"
+          label="Email"
+          style={{ elevation: 1 }}
+          validation={validateEmailField}
+          form={{ errors: errors, register: register }}
+        />
+
+        <TextBoxHtml<FormFields>
+          field="password"
+          label="Password"
+          style={{ elevation: 1 }}
+          form={{ errors: errors, register: register }}
+          hider={{
+            hiderBool: showPassword,
+            hiderOnClick: () => setShowPassword(!showPassword),
+          }}
+        />
+
+        <TextBoxHtml<FormFields>
+          field="passwordConfirmation"
+          label="Confirm password"
+          style={{ elevation: 1 }}
+          form={{ errors: errors, register: register }}
+          validation={validatePasswordConfirmation}
+          hider={{
+            hiderBool: showPasswordConfirmation,
+            hiderOnClick: () =>
+              setShowPasswordConfirmation(!showPasswordConfirmation),
+          }}
+        />
         <Grid size={12} sx={{ justifyContent: "center" }}>
-          <ButtonHtml label="Register" />
+          <BasicButton label="Register" />
         </Grid>
         <RegistrationSuggestionHtml />
       </Grid>
-    );
-  }
-
-  function BackToMainBtnHtml() {
-    return (
-      <Paper sx={{ width: "40%" }}>
-        <NavLink to={PATHS.Index}>
-          <ButtonHtml
-            label={
-              <>
-                <ArrowBackIosIcon />
-                Back to Main
-              </>
-            }
-            elevation={3}
-          />
-        </NavLink>
-      </Paper>
     );
   }
 
@@ -193,131 +163,6 @@ export default function RegistrationPage(): ReactNode {
           <NavLink to={PATHS.Login}>Sign in.</NavLink>
         </Typography>
       </Grid>
-    );
-  }
-
-  function TitleHtml() {
-    return (
-      <Typography
-        variant="h4"
-        sx={{
-          marginLeft: "auto",
-          marginRight: "auto",
-          width: "33%",
-          marginBottom: "2rem",
-          display: { md: "flex" },
-          fontFamily: "monospace",
-          fontWeight: 700,
-          color: "inherit",
-        }}
-      >
-        Register
-      </Typography>
-    );
-  }
-
-  function ButtonHtml({
-    label,
-    elevation = 0,
-  }: {
-    label: string | ReactNode;
-    elevation?: number;
-  }) {
-    return (
-      <Paper
-        sx={{
-          margin: "1rem",
-          width: "100%",
-        }}
-        elevation={elevation}
-      >
-        <Button
-          type="submit"
-          sx={{
-            width: "100%",
-          }}
-        >
-          {label}
-        </Button>
-      </Paper>
-    );
-  }
-
-  function TextBoxHtml({
-    key,
-    label = undefined,
-    hiderOnclick = undefined,
-    hiderBool = undefined,
-    validation = undefined,
-    elevation = 0,
-  }: {
-    key: "username" | "email" | "password" | "passwordConfirmation";
-    label?: string | undefined;
-    hiderOnclick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-    hiderBool?: boolean | undefined;
-    validation?: undefined | ((value: string) => string | undefined);
-    elevation?: number;
-  }) {
-    return (
-      <Paper
-        square={false}
-        elevation={elevation}
-        sx={{
-          padding: 1 + "%",
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <FormControl
-          sx={{
-            width: "100%",
-          }}
-          variant="filled"
-          size="small"
-        >
-          <TextField
-            placeholder={label ?? key}
-            required
-            id={key}
-            type={
-              hiderBool === undefined ? "text" : hiderBool ? "text" : "password"
-            }
-            {...register(
-              key,
-              validation ? { validate: validation } : undefined
-            )}
-            error={!!errors[key]}
-            helperText={formErrorHtml(errors[key]?.message)}
-            slotProps={
-              hiderBool !== undefined && hiderOnclick !== undefined
-                ? {
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label={
-                              hiderBool
-                                ? "hide the password"
-                                : "display the password"
-                            }
-                            onClick={hiderOnclick}
-                          >
-                            {hiderBool ? (
-                              <VisibilityOffIcon />
-                            ) : (
-                              <VisibilityIcon />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }
-                : undefined
-            }
-          />
-        </FormControl>
-      </Paper>
     );
   }
 }
