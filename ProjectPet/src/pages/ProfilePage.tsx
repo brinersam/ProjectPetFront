@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { GetTestEPAsync } from "../api/testEP";
 import { TestEndpoints } from "../api/endpoints";
+import { GetTestEPAsync } from "../api/Services/TestService";
 
 export default function ProfilePage(): ReactNode {
   const [test, setTest] = useState<string[] | undefined>(undefined);
