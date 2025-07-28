@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./MainPage.css";
 import {
   Container,
@@ -84,7 +84,9 @@ export default function MainPage() {
   });
 
   // reset pagination on filter update
-  useEffect(() => setPage(1), [filters, sorting]);
+  useMemo(() => {
+    if (page != 1) setPage(1); //
+  }, [filters, sorting]);
   //#endregion
 
   //#region Errors

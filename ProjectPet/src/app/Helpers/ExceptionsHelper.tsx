@@ -7,7 +7,12 @@ import type { SerializedError } from "@reduxjs/toolkit";
 
 export default class ExceptionsHelper {
   static ToastError(
-    exception: AxiosError | FetchBaseQueryError | SerializedError | Error,
+    exception:
+      | AxiosError
+      | FetchBaseQueryError
+      | SerializedError
+      | Error
+      | unknown,
     rethrow: boolean = true,
     errorPrefix: string | undefined = "Error: "
   ) {
