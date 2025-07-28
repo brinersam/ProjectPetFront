@@ -1,6 +1,5 @@
 import axios from "axios";
-
-export const API_PATH:string = "http://localhost:80/api/";
+import { API_PATH } from "./endpoints";
 
 export const api = axios.create({
     baseURL : API_PATH,

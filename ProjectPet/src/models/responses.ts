@@ -4,6 +4,15 @@ export type Envelope<T> = {
     errors: Error[];
   };
 
+export type PagedList<T> = {
+    data: T,
+    totalCount: number,
+    pageSize: number,
+    pageIndex: number,
+    hasNextPage: boolean,
+    hasPreviousPage: boolean,
+}
+
 export type Error = {
     code: string,
     message : string,
