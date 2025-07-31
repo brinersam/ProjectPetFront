@@ -7,12 +7,11 @@ export default function TitleLabel({ label }: { label: string }) {
       sx={{
         marginLeft: "auto",
         marginRight: "auto",
-        width: "33%",
         marginBottom: "2rem",
-        display: { md: "flex" },
         fontFamily: "monospace",
         fontWeight: 700,
         color: "inherit",
+        textAlign: "center",
       }}
     >
       {label}
