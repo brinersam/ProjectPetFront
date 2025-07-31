@@ -1,16 +1,54 @@
-import { Grid, Paper, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext/AuthContext";
 import TitleLabel from "../components/RegistrationLogin/TitleLabel";
 import BasicButton from "../components/RegistrationLogin/BasicButton";
 import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
 import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
 import FormTextBox from "../components/Form/FormTextBox";
+import { useLoginMutation } from "../api/Auth/AuthApi";
+import { useDispatch } from "react-redux";
+import { doLogin } from "../api/Auth/AuthSlice";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
+  // #region Auth
+  const [
+    login,
+    { isError: isAuthError, error: authErrors, isLoading: authIsLoading },
+  ] = useLoginMutation();
+  const dispatch = useDispatch();
+
+  const OnSubmit = async (data: FormFields) => {
+    try {
+      const result = await login({
+        email: data.email,
+        password: data.password,
+      }).unwrap();
+
+      if (!result?.result || isAuthError) {
+        ExceptionsHelper.ToastError(authErrors);
+        return;
+      }
+
+      dispatch(doLogin(result.result));
+      navigate(PATHS.Profile);
+    } catch (exception) {
+      ExceptionsHelper.ToastError(exception);
+    }
+  };
+
+  // #endregion
+
   //#region Form
   const [showPassword, setShowPassword] = useState(false);
 
@@ -18,6 +56,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormFields>({ mode: "onChange" });
 
   type FormFields = { email: string; password: string };
@@ -25,86 +64,91 @@ export default function LoginPage() {
   const validateEmailField = (value: string) => {
     if (!value.includes("@") && value) return 'Email is invalid - missing "@"';
   };
-
-  const { login, accessToken } = useAuth();
-  const navigate = useNavigate();
-
-  const OnSubmit = async (data: FormFields) => {
-    try {
-      await login(data.email, data.password);
-      navigate(PATHS.Profile);
-    } catch (exception) {
-      ExceptionsHelper.ToastError(exception);
-    }
-  };
   //#endregion
 
-  return <>{RenderHtml()}</>;
+  const loginButton = authIsLoading ? (
+    <CircularProgress color="secondary" />
+  ) : (
+    <BasicButton label="LogIn" />
+  );
 
-  function RenderHtml() {
-    return (
-      <>
-        <BackToMainBtn />
-        <Paper
-          elevation={4}
-          sx={{
-            padding: "2rem",
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginTop: "10%",
-            width: "30%",
-            maxHeight: "60rem",
-          }}
+  return (
+    <>
+      <BackToMainBtn />
+      <Paper
+        elevation={4}
+        sx={{
+          padding: "2rem",
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "10%",
+          width: "30%",
+          maxHeight: "60rem",
+        }}
+      >
+        <Grid
+          component="form"
+          onSubmit={handleSubmit(OnSubmit)}
+          container
+          sx={{ justifyContent: "center" }}
         >
+          <TitleLabel label="Login" />
+          <Button
+            sx={{ backgroundColor: "#59993c" }}
+            onClick={() => {
+              setValue("email", "DEFAULTADMINUSERNAME@mail.com");
+              setValue("password", "Aa1#1234567890-123456");
+            }}
+          ></Button>
+          <FormTextBox<FormFields>
+            disabled={authIsLoading}
+            field="email"
+            label="Email"
+            style={{ elevation: 1 }}
+            validation={validateEmailField}
+            form={{ errors: errors, register: register }}
+          />
+          <FormTextBox<FormFields>
+            disabled={authIsLoading}
+            field="password"
+            label="Password"
+            style={{ elevation: 1 }}
+            form={{ errors: errors, register: register }}
+            hider={{
+              hiderBool: showPassword,
+              hiderOnClick: () => setShowPassword(!showPassword),
+            }}
+          />
           <Grid
-            component="form"
-            onSubmit={handleSubmit(OnSubmit)}
-            container
-            sx={{ justifyContent: "center" }}
+            size={12}
+            sx={{ display: "flex", justifyContent: "center", mt: 2 }}
           >
-            <div>{accessToken}</div>
-
-            <TitleLabel label="Login" />
-            <FormTextBox<FormFields>
-              field="email"
-              label="Email"
-              style={{ elevation: 1 }}
-              validation={validateEmailField}
-              form={{ errors: errors, register: register }}
-            />
-            <FormTextBox<FormFields>
-              field="password"
-              label="Password"
-              style={{ elevation: 1 }}
-              form={{ errors: errors, register: register }}
-              hider={{
-                hiderBool: showPassword,
-                hiderOnClick: () => setShowPassword(!showPassword),
-              }}
-            />
-            <Grid size={12} sx={{ justifyContent: "center" }}>
-              <BasicButton label="LogIn" />
-            </Grid>
             <RegistrationSuggestionHtml />
           </Grid>
-        </Paper>
-      </>
-    );
-  }
+          <Grid
+            size={12}
+            sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+          >
+            {loginButton}
+          </Grid>
+        </Grid>
+      </Paper>
+    </>
+  );
+}
 
-  function RegistrationSuggestionHtml() {
-    return (
-      <Grid container columnSpacing={1}>
-        <Typography variant="caption">Dont have an account?</Typography>
-        <Typography
-          sx={{ textDecoration: "underline" }}
-          display="inline"
-          variant="caption"
-          color="secondary"
-        >
-          <NavLink to={PATHS.Registration}>Create one.</NavLink>
-        </Typography>
-      </Grid>
-    );
-  }
+function RegistrationSuggestionHtml() {
+  return (
+    <Grid container columnSpacing={1}>
+      <Typography variant="caption">Dont have an account?</Typography>
+      <Typography
+        sx={{ textAlign: "center", textDecoration: "underline" }}
+        display="inline"
+        variant="caption"
+        color="secondary"
+      >
+        <NavLink to={PATHS.Registration}>Create one.</NavLink>
+      </Typography>
+    </Grid>
+  );
 }

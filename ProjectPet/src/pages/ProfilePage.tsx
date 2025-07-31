@@ -1,14 +1,18 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { TestEndpoints } from "../api/endpoints";
-import { GetTestEPAsync } from "../api/Services/TestService";
+import { useState, type ReactNode } from "react";
+import { selectAccessToken } from "../api/Auth/AuthSlice";
+import { useSelector } from "react-redux";
 
 export default function ProfilePage(): ReactNode {
-  const [test, setTest] = useState<string[] | undefined>(undefined);
+  const accessToken = useSelector(selectAccessToken) ?? undefined;
 
-  useEffect(() => {
-    GetTestEPAsync(TestEndpoints.TestAuth).then((response) =>
-      setTest(response.result)
-    );
-  }, []);
-  return <>Profile of {test?.map((x) => x)}</>;
+  return (
+    <>
+      Profile of {accessToken}
+      {/* {false ? (
+        <Skeleton variant="circular" width={40} height={40} />
+      ) : (
+        test?.map((x) => x)
+      )} */}
+    </>
+  );
 }
