@@ -4,17 +4,37 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { type ReactNode } from "react";
-import { Container, Switch } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Container } from "@mui/material";
+import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
-import { useAuth } from "../context/AuthContext/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { useLogoutMutation } from "../api/Auth/AuthApi";
+import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import { authActions, authSelectors } from "../api/Auth/AuthSlice";
 
 export default function Header(): ReactNode {
-  return <HeaderHtml />;
-}
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const accessToken = useSelector(authSelectors.selectAccessToken);
 
-function HeaderHtml(): ReactNode {
-  const { accessToken } = useAuth();
+  const [logoutRequest, { isError: isLogoutError, error: logoutErrors }] =
+    useLogoutMutation();
+
+  const logout = async () => {
+    try {
+      await logoutRequest({}).unwrap();
+
+      if (isLogoutError) {
+        ExceptionsHelper.ToastError(logoutErrors);
+        return;
+      }
+
+      await dispatch(authActions.doLogout());
+      navigate(PATHS.Login);
+    } catch (e) {
+      ExceptionsHelper.ToastError(e);
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -83,6 +103,9 @@ function HeaderHtml(): ReactNode {
         <NavLink to={PATHS.Profile}>
           <Button color="inherit">Profile</Button>
         </NavLink>
+        <Button onClick={logout} color="inherit">
+          Logout
+        </Button>
       </>
     );
   }

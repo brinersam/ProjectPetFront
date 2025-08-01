@@ -1,15 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice } from "./api/RtkQSlice";
-import userdataReducer from "./api/Auth/AuthSlice"
-import petReducer from "./api/Pets/PetsSlice"
+import authReducer, { AuthSliceName } from "./api/Auth/AuthSlice"
+import { api } from "./api/api";
+import { router } from "./app/Router";
+
+export const extraStoreArgument = {
+    router,
+}
 
 export const store = configureStore({
     reducer: {
-        userdata: userdataReducer,
-        pet: petReducer,
-        [apiSlice.reducerPath]: apiSlice.reducer
+        [AuthSliceName] : authReducer,
+        [api.reducerPath]: api.reducer
     },
     middleware: getDefaultMiddleware =>
-        getDefaultMiddleware()
-            .concat(apiSlice.middleware)
+        getDefaultMiddleware({thunk : {extraArgument: extraStoreArgument}})
+            .concat(api.middleware)
 });

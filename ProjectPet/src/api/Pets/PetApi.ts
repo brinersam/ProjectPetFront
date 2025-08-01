@@ -1,10 +1,10 @@
 import type { Envelope, PagedList } from "../../models/responses";
 import { PetEndpoints } from "../endpoints";
-import { apiSlice } from "../RtkQSlice"
+import { api } from "../api"
 import type { PetResponse } from "./Models/PetResponse";
 import type { GetPetsPaginatedRequest } from "./Requests/GetPetsPaginatedRequest";
 
-export const PetApi = apiSlice.injectEndpoints({
+export const PetApi = api.injectEndpoints({
     endpoints: builder => ({
         getPetsPaginated: builder.query<Envelope<PagedList<PetResponse[]>>, GetPetsPaginatedRequest>({
             query: request => {

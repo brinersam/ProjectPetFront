@@ -33,6 +33,7 @@ type StyleProps = {
 type TextBoxProps<TFields extends FieldValues> = {
   field: Path<TFields>;
   label?: string | undefined;
+  disabled?: boolean;
   form: FormFuncs<TFields>;
   hider?: HiderProps;
   validation?: undefined | ((value: string) => string | undefined);
@@ -42,6 +43,7 @@ type TextBoxProps<TFields extends FieldValues> = {
 export default function FormTextBox<TFields extends FieldValues>({
   field,
   label = undefined,
+  disabled = undefined,
   form,
   hider = undefined,
   validation = undefined,
@@ -66,6 +68,7 @@ export default function FormTextBox<TFields extends FieldValues>({
         size="small"
       >
         <TextField
+          disabled={disabled}
           placeholder={label ?? field}
           required
           id={field}

@@ -12,6 +12,7 @@ export enum AuthEndpoints {
     Login = "Auth/login",
     Register = "Auth/register",
     RefreshTokens = "Auth/refresh-tokens",
+    Logout = "Auth/logout",
   }
 
 export enum PetEndpoints {
