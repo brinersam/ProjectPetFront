@@ -1,63 +1,196 @@
-import { type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./MainPage.css";
 import {
-  Button,
-  Checkbox,
   Container,
   Divider,
-  FormControl,
   Grid,
-  InputAdornment,
-  InputLabel,
   List,
   ListItem,
-  ListItemText,
-  MenuItem,
-  Pagination,
   Paper,
-  Select,
-  TextField,
   Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ClearAllIcon from "@mui/icons-material/ClearAll";
+import { useGetPetsPaginatedQuery } from "../api/Pets/PetApi";
+import type {
+  GetPetsPaginatedFilters,
+  GetPetsPaginatedSorting,
+} from "../api/Pets/Requests/GetPetsPaginatedRequest";
+import PetResultsBox from "../components/MainPage/Results/PetResultsBox";
+import { useForm } from "react-hook-form";
+import SearchBar from "../components/MainPage/Form/SearchBar";
+import DropDown from "../components/MainPage/Form/DropDown";
+import CheckBox from "../components/MainPage/Form/CheckBox";
+import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import PanelButton from "../components/MainPage/Form/PanelButton";
 
 export default function MainPage() {
-  return <RenderHtml />;
+  //#region FilterAndSorting
 
-  function RenderHtml(): ReactNode {
-    return (
-      <Container sx={{ paddingY: 2 + "rem" }} maxWidth="xl">
-        <Grid container spacing={4}>
-          <Grid size={4}>{SearchBoxHtml()}</Grid>
-          <Grid size={8}>{PetResultsBoxHtml()}</Grid>
+  //#region Filter
+  type FilterFields = {
+    // volunteerId?: string;
+    name?: string;
+    age?: number;
+    // speciesName?: string;
+    // breedName?: string;
+    // coat?: string;
+  };
+
+  const {
+    register: registerFiltersForm,
+    handleSubmit: handleSubmitFiltersForm,
+    reset: resetFiltersForm,
+  } = useForm<FilterFields>();
+
+  const [filters, setFilters] = useState<GetPetsPaginatedFilters>({});
+
+  const applyFilters = (data: FilterFields) => {
+    const newFilters: GetPetsPaginatedFilters = {};
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        // @ts-ignore
+        newFilters[key as keyof GetPetsPaginatedFilters] = value;
+      }
+    });
+
+    setSorting({});
+    setFilters(newFilters);
+  };
+  //#endregion
+
+  //#region Sorting
+  const [sorting, setSorting] = useState<GetPetsPaginatedSorting>({});
+  //#endregion
+
+  const resetFiltersAndSorting = () => {
+    resetFiltersForm();
+    setFilters({});
+    setSorting({});
+  };
+
+  const [page, setPage] = useState<number>(1);
+
+  const {
+    data: petsData,
+    // isLoading,
+    isFetching,
+    isError,
+    error,
+  } = useGetPetsPaginatedQuery({
+    Take: 4,
+    Page: page,
+    Filters: filters,
+    Sorting: sorting,
+  });
+
+  // reset pagination on filter update
+  useMemo(() => {
+    if (page != 1) setPage(1); //
+  }, [filters, sorting]);
+  //#endregion
+
+  //#region Errors
+  useEffect(() => {
+    if (isError == false) return;
+    ExceptionsHelper.ToastError(error, false);
+  }, [isError]);
+  //#endregion
+
+  return (
+    <Container sx={{ paddingY: "2rem" }} maxWidth="xl">
+      <Grid container spacing={4}>
+        <Grid size={4}>{SearchBoxHtml()}</Grid>
+        <Grid size={8}>
+          <PetResultsBox
+            page={page}
+            isError={isError}
+            setPage={setPage}
+            isLoading={isFetching}
+            petsDatas={petsData?.result ?? undefined}
+          />
         </Grid>
-      </Container>
-    );
-  }
+      </Grid>
+    </Container>
+  );
 
   function SearchBoxHtml() {
     return (
-      <Paper elevation={2}>
-        <List>
-          <ListItem>{LabelHtml("Поиск")}</ListItem>
+      <form onSubmit={handleSubmitFiltersForm(applyFilters)}>
+        <Paper elevation={2}>
+          <List>
+            <ListItem>{LabelHtml("Поиск")}</ListItem>
 
-          <ListItem>{SearchBarHtml("Имя")}</ListItem>
-          <ListItem>{DropDownHtml("Вид")}</ListItem>
+            <ListItem>
+              <SearchBar
+                label={"Имя"}
+                filtering={{ field: "name", register: registerFiltersForm }}
+                sorting={{
+                  field: "name",
+                  setSorting: setSorting,
+                  sortingValue: sorting,
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <SearchBar
+                label={"Возраст (В годах)"}
+                filtering={{ field: "age", register: registerFiltersForm }}
+                sorting={{
+                  field: "age",
+                  setSorting: setSorting,
+                  sortingValue: sorting,
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <DropDown label="Вид" />
+            </ListItem>
 
-          <Divider variant="middle" component="li" />
+            <Divider variant="middle" component="li" />
 
-          <ListItem>{LabelHtml("Фильтры")}</ListItem>
+            <ListItem>{LabelHtml("Фильтры")}</ListItem>
 
-          <ListItem>{DropDownHtml("Пол")}</ListItem>
-          <ListItem>{DropDownHtml("Порода")}</ListItem>
-          <ListItem>{DropDownHtml("Окрас")}</ListItem>
-          <ListItem>{DropDownHtml("Место нахождения")}</ListItem>
-          <ListItem>{DropDownHtml("Статус")}</ListItem>
-          <ListItem>{CheckBoxHtml("Прививки")}</ListItem>
-          <ListItem>{CheckBoxHtml("Стерилизация")}</ListItem>
-        </List>
-      </Paper>
+            <ListItem>
+              <DropDown label="Пол" />
+            </ListItem>
+            <ListItem>
+              <DropDown label="Порода" />
+            </ListItem>
+            <ListItem>
+              <DropDown
+                label="Окрас"
+                sorting={{
+                  field: "coat",
+                  setSorting: setSorting,
+                  sortingValue: sorting,
+                }}
+              />
+            </ListItem>
+            <ListItem>
+              <DropDown label="Место нахождения" />
+            </ListItem>
+            <ListItem>
+              <DropDown label="Статус" />
+            </ListItem>
+            <ListItem>
+              <CheckBox label="Прививки" />
+            </ListItem>
+            <ListItem>
+              <CheckBox label="Стерилизация" />
+            </ListItem>
+            <ListItem>
+              <PanelButton sx={{ width: "100%" }} label="Применить" />
+            </ListItem>
+            <ListItem>
+              <PanelButton
+                sx={{ width: "100%" }}
+                onClick={resetFiltersAndSorting}
+                label="Сброс"
+              />
+            </ListItem>
+          </List>
+        </Paper>
+      </form>
     );
 
     function LabelHtml(propText: string, propVariant: null | any = null) {
@@ -66,266 +199,6 @@ export default function MainPage() {
           {propText}
         </Typography>
       );
-    }
-
-    function CheckBoxHtml(label: string) {
-      return (
-        <Paper
-          square={false}
-          elevation={30}
-          sx={{
-            padding: 1 + "%",
-            display: "flex",
-            alignItems: "center",
-            minWidth: 100 + "%",
-          }}
-        >
-          <ListItemText sx={{ paddingLeft: 1 }}>{label}</ListItemText>
-          <Checkbox />
-        </Paper>
-      );
-    }
-
-    function DropDownHtml(
-      label: string,
-      values: Array<{ label: string; value: any }> = []
-    ): ReactNode {
-      const valueHtmls = values.map((item) => (
-        <MenuItem key={item.value} value={item.value}>
-          {item.label}
-        </MenuItem>
-      ));
-
-      return (
-        <Paper
-          square={false}
-          elevation={8}
-          sx={{
-            padding: 1 + "%",
-            display: "flex",
-            alignItems: "center",
-            minWidth: 100 + "%",
-          }}
-        >
-          <FormControl variant="filled" size="small" fullWidth>
-            <InputLabel>{label}</InputLabel>
-            <Select>
-              <MenuItem value="">
-                <em>
-                  <ClearAllIcon />
-                </em>
-              </MenuItem>
-              {valueHtmls}
-            </Select>
-          </FormControl>
-        </Paper>
-      );
-    }
-
-    function SearchBarHtml(label: string) {
-      return (
-        <Paper
-          square={false}
-          elevation={8}
-          sx={{
-            padding: 1 + "%",
-            display: "flex",
-            alignItems: "center",
-            minWidth: 100 + "%",
-          }}
-        >
-          <TextField
-            fullWidth
-            label={label}
-            variant="filled"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Paper>
-      );
-    }
-  }
-
-  function PetResultsBoxHtml() {
-    return (
-      <>
-        <Grid
-          container
-          sx={{
-            justifyContent: "space-around",
-            padding: "1rem",
-            maxHeight: "45rem",
-            overflow: "auto",
-          }}
-          rowSpacing={6}
-          columnSpacing={2}
-        >
-          <PetCard />
-          <PetCard />
-          <PetCard />
-          <PetCard />
-          <PetCard />
-          <PetCard />
-        </Grid>
-        <Pagination sx={{ marginTop: "1rem", paddingLeft: "30%" }} count={10} />
-      </>
-    );
-
-    function PetCard() {
-      return (
-        <Paper
-          sx={{
-            borderRadius: "10%",
-          }}
-          elevation={6}
-        >
-          <Grid
-            sx={{
-              width: "25rem",
-            }}
-          >
-            {PetImgHtml()}
-            <Grid
-              sx={{
-                padding: "1rem",
-                width: "100%",
-              }}
-            >
-              {PetNameAgeHtml()}
-              <Divider sx={{ padding: "0.3rem" }} variant="middle" />
-              {PetStatsHtml()}
-              {HashTagsHtml()}
-              {ButtonsHtml()}
-            </Grid>
-          </Grid>
-        </Paper>
-      );
-
-      function PetImgHtml() {
-        return (
-          <Grid
-            sx={{
-              borderRadius: "inherit",
-              maxHeight: "15rem",
-              maxWidth: "100%",
-              overflow: "hidden",
-              marginBottom: "0.5rem",
-            }}
-          >
-            <img
-              className="overflow-hidden, rounded-4xl "
-              src={
-                "https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
-            ></img>
-          </Grid>
-        );
-      }
-
-      function PetNameAgeHtml() {
-        return (
-          <Grid
-            container
-            sx={{
-              alignItems: "center",
-              width: "100%",
-              justifyContent: "space-between",
-            }}
-          >
-            <Grid size={6}>
-              <Typography
-                variant="h4"
-                sx={{
-                  display: { md: "flex" },
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  color: "inherit",
-                }}
-              >
-                CatName
-              </Typography>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>1 year 5 months old</Typography>
-            </Grid>
-          </Grid>
-        );
-      }
-
-      function ButtonsHtml() {
-        return (
-          <Grid
-            container
-            sx={{
-              paddingY: "5%",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <Grid size={8}>
-              <Paper elevation={60}>
-                <Button
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  Find out more
-                </Button>
-              </Paper>
-            </Grid>
-            <Grid size={2}>
-              <Paper elevation={60}>
-                <Button
-                  sx={{
-                    width: 100 + "%",
-                  }}
-                >
-                  Fav
-                </Button>
-              </Paper>
-            </Grid>
-          </Grid>
-        );
-      }
-
-      function PetStatsHtml() {
-        return (
-          <Grid
-            sx={{
-              width: "100%",
-            }}
-          >
-            <Typography>Vaccination : true</Typography>
-            <Typography>Humans : loves</Typography>
-            <Typography>Animals : loves</Typography>
-          </Grid>
-        );
-      }
-
-      function HashTagsHtml() {
-        return (
-          <Grid
-            sx={{
-              height: 5 + "%",
-              width: 100 + "%",
-              overflow: "hidden",
-              paddingTop: "5%",
-            }}
-          >
-            <Typography>
-              #Lorem #ipsum #dolor #sit #amet #consectetur #adipisicing #elit
-              #Eligendi
-            </Typography>
-          </Grid>
-        );
-      }
     }
   }
 }

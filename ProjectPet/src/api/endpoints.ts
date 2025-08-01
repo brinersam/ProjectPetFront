@@ -1,9 +1,11 @@
+export const API_PATH:string = "http://localhost:80/api/";
+
 export enum TestEndpoints {
-    Test = "VolunteerRequests/Test",
-    Error = "VolunteerRequests/Error",
-    TestAuth = "VolunteerRequests/TestAuth",
-    TestAuthFail = "VolunteerRequests/TestAuthFail",
-    NonExistant = "VolunteerRequests/TestAuthFail"
+    TestUnauthenticated = "Debug/TestUnauthenticated",
+    Exception = "Debug/Exception",
+    TestAuthenticatedOnly = "Debug/TestAuthenticatedOnly",
+    TestAdminOnly = "Debug/TestAdminOnly",
+    NonExistant = "Debug/NotAnEp"
   }
 
 export enum AuthEndpoints {
@@ -11,3 +13,8 @@ export enum AuthEndpoints {
     Register = "Auth/register",
     RefreshTokens = "Auth/refresh-tokens",
   }
+
+export enum PetEndpoints {
+  GetPetById = "Pet",
+  GetPetsPaginated = "Pet"
+}
