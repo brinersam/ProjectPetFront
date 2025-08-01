@@ -1,7 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { api } from "./api/api";
 import authReducer, { AuthSliceName } from "./api/Auth/AuthSlice"
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { api } from "./api/api";
+import { router } from "./app/Router";
+
+export const extraStoreArgument = {
+    router,
+}
 
 export const store = configureStore({
     reducer: {
@@ -9,13 +13,6 @@ export const store = configureStore({
         [api.reducerPath]: api.reducer
     },
     middleware: getDefaultMiddleware =>
-        getDefaultMiddleware()
+        getDefaultMiddleware({thunk : {extraArgument: extraStoreArgument}})
             .concat(api.middleware)
 });
-
-export type AppState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-export const useAppStore = useStore.withTypes<typeof store>();
-export const useAppSelector = useSelector.withTypes<AppState>();
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
