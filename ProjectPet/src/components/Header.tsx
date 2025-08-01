@@ -5,16 +5,17 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { type ReactNode } from "react";
 import { Container } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useDispatch, useSelector } from "react-redux";
-import { doLogout, selectAccessToken } from "../api/Auth/AuthSlice";
 import { useLogoutMutation } from "../api/Auth/AuthApi";
 import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import { authActions, authSelectors } from "../api/Auth/AuthSlice";
 
 export default function Header(): ReactNode {
   const dispatch = useDispatch();
-  const accessToken = useSelector(selectAccessToken);
+  const navigate = useNavigate();
+  const accessToken = useSelector(authSelectors.selectAccessToken);
 
   const [logoutRequest, { isError: isLogoutError, error: logoutErrors }] =
     useLogoutMutation();
@@ -28,7 +29,8 @@ export default function Header(): ReactNode {
         return;
       }
 
-      dispatch(doLogout());
+      await dispatch(authActions.doLogout());
+      navigate(PATHS.Login);
     } catch (e) {
       ExceptionsHelper.ToastError(e);
     }

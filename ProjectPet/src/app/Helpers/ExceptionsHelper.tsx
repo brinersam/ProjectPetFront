@@ -18,43 +18,56 @@ export default class ExceptionsHelper {
     rethrow: boolean = true,
     errorPrefix: string | undefined = "Error: "
   ) {
-    let errorMessage: any | undefined = undefined;
-
-    errorMessage ??= ExceptionsHelper.tryHandleUndefinedError(exception);
-    errorMessage ??= ExceptionsHelper.tryHandleAxiosError(exception);
-    errorMessage ??= ExceptionsHelper.tryHandleFetchBaseQueryError(exception);
-    errorMessage ??= ExceptionsHelper.tryHandleErrorArray(exception);
-    errorMessage ??= exception;
-
+    const errorMessage = ExceptionsHelper.FormatError(exception);
     toast(errorPrefix + errorMessage);
     if (rethrow && exception instanceof Error) throw exception;
   }
 
-  static tryHandleUndefinedError(exception: any) {
-    if (exception) return undefined;
+  static FormatError(
+    error:
+      | AxiosError
+      | FetchBaseQueryError
+      | SerializedError
+      | Error
+      | Error[]
+      | unknown
+  ) {
+    let errorMessage: any | undefined = undefined;
 
-    return errorConsts.Unknown;
+    errorMessage ??= tryHandleUndefinedError(error);
+    errorMessage ??= tryHandleAxiosError(error);
+    errorMessage ??= tryHandleFetchBaseQueryError(error);
+    errorMessage ??= tryHandleErrorArray(error);
+    errorMessage ??= error;
+
+    return errorMessage;
   }
+}
 
-  static tryHandleAxiosError(exception: any) {
-    if (isAxiosError<Envelope<any>>(exception) == false) return undefined;
-    if (exception.response?.data?.errors == undefined) return undefined;
+function tryHandleUndefinedError(exception: any) {
+  if (exception) return undefined;
 
-    return formatErrorArray(exception.response?.data?.errors);
-  }
+  return errorConsts.Unknown;
+}
 
-  static tryHandleFetchBaseQueryError(exception: any) {
-    if ("status" in exception == false) return undefined;
+function tryHandleAxiosError(exception: any) {
+  if (isAxiosError<Envelope<any>>(exception) == false) return undefined;
+  if (exception.response?.data?.errors == undefined) return undefined;
 
-    const errorData = exception.data as Envelope<null> | undefined;
-    if (!errorData || !errorData?.errors) return errorConsts.Server; // couldnt parse | no errors sent
-    return formatErrorArray(errorData.errors); // could parse | errors sent
-  }
+  return formatErrorArray(exception.response?.data?.errors);
+}
 
-  static tryHandleErrorArray(exception: any) {
-    if (exception.constructor !== Array) return undefined;
-    return formatErrorArray(exception);
-  }
+function tryHandleFetchBaseQueryError(exception: any) {
+  if ("status" in exception == false) return undefined;
+
+  const errorData = exception.data as Envelope<null> | undefined;
+  if (!errorData || !errorData?.errors) return errorConsts.Server; // couldnt parse | no errors sent
+  return formatErrorArray(errorData.errors); // could parse | errors sent
+}
+
+function tryHandleErrorArray(exception: any) {
+  if (exception.constructor !== Array) return undefined;
+  return formatErrorArray(exception);
 }
 
 function formatErrorArray(errors: BackendError[]) {
