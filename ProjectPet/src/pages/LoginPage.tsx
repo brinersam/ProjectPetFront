@@ -6,48 +6,26 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
 import TitleLabel from "../components/RegistrationLogin/TitleLabel";
 import BasicButton from "../components/RegistrationLogin/BasicButton";
 import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
-import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
 import FormTextBox from "../components/Form/FormTextBox";
-import { useLoginMutation } from "../api/Auth/AuthApi";
-import { useDispatch } from "react-redux";
-import { doLogin } from "../api/Auth/AuthSlice";
+import { authSelectors } from "../api/Auth/AuthSlice";
+import { useAppDispatch, useAppSelector } from "../reduxTypes";
+import { loginThunk } from "../api/Auth/Thunks/loginThunk";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  const authIsLoading =
+    useAppSelector(authSelectors.selectLoginStatus) == "loading";
 
-  // #region Auth
-  const [
-    login,
-    { isError: isAuthError, error: authErrors, isLoading: authIsLoading },
-  ] = useLoginMutation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const OnSubmit = async (data: FormFields) => {
-    try {
-      const result = await login({
-        email: data.email,
-        password: data.password,
-      }).unwrap();
-
-      if (!result?.result || isAuthError) {
-        ExceptionsHelper.ToastError(authErrors);
-        return;
-      }
-
-      dispatch(doLogin(result.result));
-      navigate(PATHS.Profile);
-    } catch (exception) {
-      ExceptionsHelper.ToastError(exception);
-    }
+    dispatch(loginThunk(data));
   };
-
-  // #endregion
 
   //#region Form
   const [showPassword, setShowPassword] = useState(false);

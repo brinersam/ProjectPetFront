@@ -1,15 +1,19 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { loginCases } from "./Thunks/loginThunk";
 
 export const AuthSliceName = "auth";
 
-export interface UserState {
+export interface AuthState {
     accessToken? : string,
-    // userData : UserData  
+    loginError? : string,
+    isAuthenticated : boolean,
+    roles?: string[],
     status: 'idle' | 'loading' | `success` | 'failed'
 }
 
-const initialState: UserState = {
-    status: "idle"
+export const initialState: AuthState = {
+    status: "idle",
+    isAuthenticated: false
 };
 
 const authSlice = createSlice({
@@ -17,23 +21,25 @@ const authSlice = createSlice({
     initialState: initialState,
     selectors: {
         selectAccessToken: (state) => state.accessToken,
-        selectStatus: (state) => state.status,
+        selectLoginStatus: (state) => state.status,
+        selectLoginError: (state) => state.loginError,
+        selectIsAuthenticated:(state) => state.isAuthenticated,
+        selectUserRoles:(state) => state.roles,
     },
     reducers: {
-        doLogin: (state, action: PayloadAction<{accessToken : string }>) => {
-            state.accessToken = action.payload.accessToken;
-            // if (action.payload?.accessToken) console.log("auth success!");
-            // console.log(`auth failed!: accessToken: ${action.payload.accessToken}`);
-            
+        doLogin: (state, {payload}: PayloadAction<{accessToken : string }>) => {
+            state.accessToken = payload.accessToken;
             state.status = "success";
-        
         },
 
         doLogout: () => initialState
+    },
+    extraReducers: (builder) => {
+        loginCases(builder)
     }
 });
 
-export const {doLogin, doLogout} = authSlice.actions;
-export const {selectAccessToken, selectStatus} = authSlice.selectors;
+export const authActions = authSlice.actions;
+export const authSelectors = authSlice.selectors;
 
 export default authSlice.reducer;
