@@ -4,14 +4,42 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import AuthService from "../api/Services/AuthService";
 import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
 import BasicButton from "../components/RegistrationLogin/BasicButton";
 import TitleLabel from "../components/RegistrationLogin/TitleLabel";
 import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
 import FormTextBox from "../components/Form/FormTextBox";
+import { useRegisterMutation } from "../api/Auth/AuthApi";
 
 export default function RegistrationPage(): ReactNode {
+  const navigate = useNavigate();
+  //#region Auth
+
+  const [register, { error: registerError, isError: isRegisterError }] =
+    useRegisterMutation();
+
+  const onSubmit = async (data: FormFields) => {
+    try {
+      await register({
+        email: data.email,
+        password: data.password,
+        username: data.username,
+      });
+
+      if (isRegisterError) {
+        ExceptionsHelper.ToastError(registerError);
+        return;
+      }
+
+      navigate(PATHS.Login);
+      toast("Success!");
+    } catch (exception) {
+      ExceptionsHelper.ToastError(exception);
+    }
+  };
+
+  //#endregion
+
   //#region Form
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
@@ -25,7 +53,7 @@ export default function RegistrationPage(): ReactNode {
   };
 
   const {
-    register,
+    register: registerForm,
     watch,
     handleSubmit,
     trigger,
@@ -47,17 +75,6 @@ export default function RegistrationPage(): ReactNode {
       return "Passwords should match";
   };
 
-  const navigate = useNavigate();
-
-  const onSubmit = async (data: FormFields) => {
-    try {
-      await AuthService.Register(data.username, data.email, data.password);
-      navigate(PATHS.Index);
-      toast("Success!");
-    } catch (exception) {
-      ExceptionsHelper.ToastError(exception);
-    }
-  };
   //#endregion
 
   //#region Tab
@@ -67,34 +84,30 @@ export default function RegistrationPage(): ReactNode {
   };
   //#endregion
 
-  return <>{RenderHtml()}</>;
-
-  function RenderHtml() {
-    return (
-      <>
-        <BackToMainBtn />
-        <Paper
-          elevation={4}
-          sx={{
-            padding: "2rem",
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginTop: "5%",
-            marginBottom: "5%",
-            width: "30%",
-            maxHeight: "60rem",
-          }}
-        >
-          <TitleLabel label="Registration" />
-          <Tabs value={tab} onChange={handleTabChange} centered>
-            <Tab label="Register as user" />
-            <Tab label="Register as volunteer" />
-          </Tabs>
-          {tab == 0 ? UserRegistrationHtml() : <></>}
-        </Paper>
-      </>
-    );
-  }
+  return (
+    <>
+      <BackToMainBtn />
+      <Paper
+        elevation={4}
+        sx={{
+          padding: "2rem",
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "5%",
+          marginBottom: "5%",
+          width: "30%",
+          maxHeight: "60rem",
+        }}
+      >
+        <TitleLabel label="Registration" />
+        <Tabs value={tab} onChange={handleTabChange} centered>
+          <Tab label="Register as user" />
+          <Tab label="Register as volunteer" />
+        </Tabs>
+        {tab == 0 ? UserRegistrationHtml() : <></>}
+      </Paper>
+    </>
+  );
 
   function UserRegistrationHtml() {
     return (
@@ -108,7 +121,7 @@ export default function RegistrationPage(): ReactNode {
           field="username"
           label="Username"
           style={{ elevation: 1 }}
-          form={{ errors: errors, register: register }}
+          form={{ errors: errors, register: registerForm }}
         />
 
         <FormTextBox<FormFields>
@@ -116,14 +129,14 @@ export default function RegistrationPage(): ReactNode {
           label="Email"
           style={{ elevation: 1 }}
           validation={validateEmailField}
-          form={{ errors: errors, register: register }}
+          form={{ errors: errors, register: registerForm }}
         />
 
         <FormTextBox<FormFields>
           field="password"
           label="Password"
           style={{ elevation: 1 }}
-          form={{ errors: errors, register: register }}
+          form={{ errors: errors, register: registerForm }}
           hider={{
             hiderBool: showPassword,
             hiderOnClick: () => setShowPassword(!showPassword),
@@ -134,7 +147,7 @@ export default function RegistrationPage(): ReactNode {
           field="passwordConfirmation"
           label="Confirm password"
           style={{ elevation: 1 }}
-          form={{ errors: errors, register: register }}
+          form={{ errors: errors, register: registerForm }}
           validation={validatePasswordConfirmation}
           hider={{
             hiderBool: showPasswordConfirmation,

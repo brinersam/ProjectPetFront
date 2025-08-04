@@ -7,6 +7,7 @@ import RegistrationPage from "../pages/RegistrationPage";
 import ProfilePage from "../pages/ProfilePage";
 import VolunteersPage from "../pages/VolunteersPage";
 import FavoritesPage from "../pages/FavoritesPage";
+import { ProtectedRoute } from "../components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +15,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: PATHS.Index,
-        element: <MainPage />,
+        element: (
+          <ProtectedRoute neededRoles={["Member"]}>
+            <MainPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: PATHS.Login,
@@ -30,7 +35,11 @@ export const router = createBrowserRouter([
       },
       {
         path: PATHS.Volunteer,
-        element: <VolunteersPage />,
+        element: (
+          <ProtectedRoute>
+            <VolunteersPage />,
+          </ProtectedRoute>
+        ),
       },
       {
         path: PATHS.Favorites,
