@@ -7,7 +7,7 @@ import {
   Select,
 } from "@mui/material";
 import { type JSX, type ReactNode } from "react";
-import type { QueryModifierSorting } from "../../HelperTypes/QueryTypes";
+import type { QueryModifierSorting } from "../../../shared/helpers/queryTypes";
 import SortingButton from "./SortingButton";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 

@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
-import { authSelectors } from "../api/Auth/AuthSlice";
 import { useSelector } from "react-redux";
+import { authSelectors } from "../modules/Auth/AuthSlice";
 
 export default function ProfilePage(): ReactNode {
   const accessToken = useSelector(authSelectors.selectAccessToken) ?? undefined;

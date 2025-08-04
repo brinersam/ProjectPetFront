@@ -1,6 +1,6 @@
 import { Grid, Pagination, Skeleton } from "@mui/material";
-import type { PetResponse } from "../../../api/Pets/Models/PetResponse";
-import type { PagedList } from "../../../models/responses";
+import type { PetResponse } from "../../../modules/Pets/models/PetResponse";
+import type { PagedList } from "../../../shared/models/responses";
 import PetCard from "./PetCard";
 
 export default function PetResultsBox({

@@ -1,5 +1,5 @@
 import { Paper, Grid, Divider, Typography, Button } from "@mui/material";
-import type { PetResponse } from "../../../api/Pets/Models/PetResponse";
+import type { PetResponse } from "../../../modules/Pets/models/PetResponse";
 import PetImg from "./PetImg";
 import { useEffect, useState } from "react";
 

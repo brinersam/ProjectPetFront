@@ -2,7 +2,7 @@ import { Grid, Paper, TextField, InputAdornment } from "@mui/material";
 import type {
   QueryModifierFiltering,
   QueryModifierSorting,
-} from "../../HelperTypes/QueryTypes";
+} from "../../../shared/helpers/queryTypes";
 import SearchIcon from "@mui/icons-material/Search";
 import SortingButton from "./SortingButton";
 

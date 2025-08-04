@@ -1,9 +1,9 @@
-import type { Envelope } from "../../models/responses";
-import { AuthEndpoints } from "../endpoints";
-import type { LoginResponse } from "./Models/LoginResponse";
-import type { LoginRequest } from "./Requests/LoginRequest";
-import type { RegisterRequest } from "./Requests/RegisterRequest";
-import { api } from "../api"
+import type { Envelope } from "../../shared/models/responses";
+import { AuthEndpoints } from "../../shared/api/endpoints";
+import type { LoginResponse } from "./models/LoginResponse";
+import type { LoginRequest } from "./models/requests/LoginRequest";
+import type { RegisterRequest } from "./models/requests/RegisterRequest";
+import { api } from "../../shared/api/api"
 
 export const AuthApi = api.injectEndpoints({
     endpoints: builder => ({

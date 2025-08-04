@@ -1,8 +1,8 @@
 import { Paper } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import { PATHS } from "../../app/Paths";
 import BasicButton from "./BasicButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { PATHS } from "../../../../shared/paths";
 
 export default function BackToMainBtn() {
   return (

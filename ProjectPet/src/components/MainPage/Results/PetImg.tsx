@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import type { PetResponse } from "../../../api/Pets/Models/PetResponse";
+import type { PetResponse } from "../../../modules/Pets/models/PetResponse";
 
 export default function PetImg({ petData }: { petData: PetResponse }) {
   return (

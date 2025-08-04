@@ -1,8 +1,8 @@
 import { useEffect, type PropsWithChildren } from "react";
-import { useAppSelector } from "../reduxTypes";
-import { authSelectors } from "../api/Auth/AuthSlice";
 import { useNavigate } from "react-router-dom";
-import { PATHS } from "../app/Paths";
+import { useAppSelector } from "../../app/reduxTypes";
+import { authSelectors } from "../../modules/Auth/AuthSlice";
+import { PATHS } from "../paths";
 
 type Props = {
   neededRoles?: string[];

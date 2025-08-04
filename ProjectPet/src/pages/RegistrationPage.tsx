@@ -1,15 +1,15 @@
 import { Grid, Paper, Tab, Tabs, Typography } from "@mui/material";
 import { useEffect, useState, type ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
-import BasicButton from "../components/RegistrationLogin/BasicButton";
-import TitleLabel from "../components/RegistrationLogin/TitleLabel";
-import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
-import FormTextBox from "../components/Form/FormTextBox";
-import { useRegisterMutation } from "../api/Auth/AuthApi";
+import BackToMainBtn from "../modules/Auth/components/registrationLogin/BackToMainBtn";
+import BasicButton from "../modules/Auth/components/registrationLogin/BasicButton";
+import TitleLabel from "../modules/Auth/components/registrationLogin/TitleLabel";
+import FormTextBox from "../shared/components/form/FormTextBox";
+import ExceptionsHelper from "../shared/helpers/exceptionsHelper";
+import { PATHS } from "../shared/paths";
+import { useRegisterMutation } from "../modules/Auth/AuthApi";
 
 export default function RegistrationPage(): ReactNode {
   const navigate = useNavigate();

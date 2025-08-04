@@ -9,17 +9,17 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { useGetPetsPaginatedQuery } from "../api/Pets/PetApi";
+import { useGetPetsPaginatedQuery } from "../modules/Pets/PetApi";
 import type {
   GetPetsPaginatedFilters,
   GetPetsPaginatedSorting,
-} from "../api/Pets/Requests/GetPetsPaginatedRequest";
+} from "../modules/Pets/models/requests/GetPetsPaginatedRequest";
 import PetResultsBox from "../components/MainPage/Results/PetResultsBox";
 import { useForm } from "react-hook-form";
 import SearchBar from "../components/MainPage/Form/SearchBar";
 import DropDown from "../components/MainPage/Form/DropDown";
 import CheckBox from "../components/MainPage/Form/CheckBox";
-import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
+import ExceptionsHelper from "../shared/helpers/exceptionsHelper";
 import PanelButton from "../components/MainPage/Form/PanelButton";
 
 export default function MainPage() {

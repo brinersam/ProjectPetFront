@@ -5,21 +5,29 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { PATHS } from "../app/Paths";
 import { useForm } from "react-hook-form";
-import TitleLabel from "../components/RegistrationLogin/TitleLabel";
-import BasicButton from "../components/RegistrationLogin/BasicButton";
-import BackToMainBtn from "../components/RegistrationLogin/BackToMainBtn";
-import FormTextBox from "../components/Form/FormTextBox";
-import { authSelectors } from "../api/Auth/AuthSlice";
-import { useAppDispatch, useAppSelector } from "../reduxTypes";
-import { loginThunk } from "../api/Auth/Thunks/loginThunk";
+import TitleLabel from "../modules/Auth/components/registrationLogin/TitleLabel";
+import BasicButton from "../modules/Auth/components/registrationLogin/BasicButton";
+import BackToMainBtn from "../modules/Auth/components/registrationLogin/BackToMainBtn";
+import { useAppSelector, useAppDispatch } from "../app/reduxTypes";
+import FormTextBox from "../shared/components/form/FormTextBox";
+import { PATHS } from "../shared/paths";
+import { authSelectors } from "../modules/Auth/AuthSlice";
+import { loginThunk } from "../modules/Auth/thunks/loginThunk";
+import ExceptionsHelper from "../shared/helpers/exceptionsHelper";
 
 export default function LoginPage() {
   const authIsLoading =
     useAppSelector(authSelectors.selectLoginStatus) == "loading";
+
+  const loginErrors = useAppSelector(authSelectors.selectLoginError);
+  const isLoginErrors = loginErrors;
+
+  useEffect(() => {
+    if (isLoginErrors) ExceptionsHelper.ToastError(loginErrors, false);
+  }, [isLoginErrors]);
 
   const dispatch = useAppDispatch();
 

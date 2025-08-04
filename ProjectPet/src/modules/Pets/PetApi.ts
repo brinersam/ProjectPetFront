@@ -1,8 +1,8 @@
-import type { Envelope, PagedList } from "../../models/responses";
-import { PetEndpoints } from "../endpoints";
-import { api } from "../api"
-import type { PetResponse } from "./Models/PetResponse";
-import type { GetPetsPaginatedRequest } from "./Requests/GetPetsPaginatedRequest";
+import type { Envelope, PagedList } from "../../shared/models/responses";
+import { PetEndpoints } from "../../shared/api/endpoints";
+import { api } from "../../shared/api/api"
+import type { PetResponse } from "./models/PetResponse";
+import type { GetPetsPaginatedRequest } from "./models/requests/GetPetsPaginatedRequest";
 
 export const PetApi = api.injectEndpoints({
     endpoints: builder => ({

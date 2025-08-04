@@ -1,10 +1,10 @@
 import { isAxiosError, type AxiosError } from "axios";
 import { toast } from "react-toastify";
-import type { Envelope } from "../../models/responses";
-import { errorConsts, errorMessages } from "./Errors";
+import type { Envelope } from "../models/responses";
+import { errorConsts, errorMessages } from "./errors";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { SerializedError } from "@reduxjs/toolkit";
-import type { Error as BackendError } from "../../models/responses";
+import type { Error as BackendError } from "../models/responses";
 
 export default class ExceptionsHelper {
   static ToastError(
@@ -58,7 +58,7 @@ function tryHandleAxiosError(exception: any) {
 }
 
 function tryHandleFetchBaseQueryError(exception: any) {
-  if ("status" in exception == false) return undefined;
+  if (Object.keys(exception).includes("status") == false) return undefined;
 
   const errorData = exception.data as Envelope<null> | undefined;
   if (!errorData || !errorData?.errors) return errorConsts.Server; // couldnt parse | no errors sent

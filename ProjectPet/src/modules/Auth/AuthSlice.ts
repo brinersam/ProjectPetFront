@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { loginCases } from "./Thunks/loginThunk";
+import { loginCases } from "./thunks/loginThunk";
 
 export const AuthSliceName = "auth";
 

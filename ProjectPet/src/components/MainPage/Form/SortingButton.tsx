@@ -1,6 +1,6 @@
 import { IconButton } from "@mui/material";
 import { useState, type ReactNode, useEffect } from "react";
-import type { QueryModifierSorting } from "../../HelperTypes/QueryTypes";
+import type { QueryModifierSorting } from "../../../shared/helpers/queryTypes";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";

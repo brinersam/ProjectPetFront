@@ -6,11 +6,11 @@ import Button from "@mui/material/Button";
 import { type ReactNode } from "react";
 import { Container } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
-import { PATHS } from "../app/Paths";
 import { useDispatch, useSelector } from "react-redux";
-import { useLogoutMutation } from "../api/Auth/AuthApi";
-import ExceptionsHelper from "../app/Helpers/ExceptionsHelper";
-import { authActions, authSelectors } from "../api/Auth/AuthSlice";
+import { useLogoutMutation } from "../../modules/Auth/AuthApi";
+import { authSelectors, authActions } from "../../modules/Auth/AuthSlice";
+import ExceptionsHelper from "../helpers/exceptionsHelper";
+import { PATHS } from "../paths";
 
 export default function Header(): ReactNode {
   const dispatch = useDispatch();

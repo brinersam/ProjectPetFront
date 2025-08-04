@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer, { AuthSliceName } from "./api/Auth/AuthSlice"
-import { api } from "./api/api";
-import { router } from "./app/Router";
+import authReducer, { AuthSliceName } from "../modules/Auth/AuthSlice"
+import { api } from "../shared/api/api";
+import { router } from "./router";
 
 export const extraStoreArgument = {
     router,

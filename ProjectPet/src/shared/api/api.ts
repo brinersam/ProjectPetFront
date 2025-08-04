@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { API_PATH, AuthEndpoints } from './endpoints';
 import type { Envelope } from '../models/responses';
-import type { AppState } from '../reduxTypes';
+import type { AppState } from '../../app/reduxTypes';
 import { Mutex } from 'async-mutex';
 
 const baseQuery = fetchBaseQuery({
@@ -32,7 +32,7 @@ const baseQueryAuthDecorator : typeof baseQuery = async (args, api, extraOptions
             const release = await mutex.acquire()
             try
             {
-                const { authActions } = await import ('./Auth/AuthSlice');
+                const { authActions } = await import ('../../modules/Auth/AuthSlice');
                 // fix for circular dependency 
                 // AuthSlice.ts <==:
                 //    ⬇            |
