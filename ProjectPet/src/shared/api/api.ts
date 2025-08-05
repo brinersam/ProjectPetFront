@@ -3,6 +3,7 @@ import { API_PATH, AuthEndpoints } from './endpoints';
 import type { Envelope } from '../models/responses';
 import type { AppState } from '../../app/reduxTypes';
 import { Mutex } from 'async-mutex';
+import type { LoginResponse } from '../../modules/Auth/models/loginResponse';
 
 const baseQuery = fetchBaseQuery({
     baseUrl: API_PATH,
@@ -49,8 +50,8 @@ const baseQueryAuthDecorator : typeof baseQuery = async (args, api, extraOptions
                     await api.dispatch(authActions.doLogout())
                     return queryResult;
                 }
-                const newAccessToken = (reauthQueryResult.data as Envelope<string>).result;
-                api.dispatch(authActions.doLogin({accessToken: newAccessToken}))
+                const loginData = (reauthQueryResult.data as Envelope<LoginResponse>).result;
+                api.dispatch(authActions.doLogin(loginData))
             }
             finally
             {

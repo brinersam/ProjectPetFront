@@ -2,7 +2,7 @@ import ExceptionsHelper from "../../../shared/helpers/exceptionsHelper";
 import { PATHS } from "../../../shared/paths";
 import { createAppAsyncThunk } from "../../../app/reduxTypes";
 import { initialState, type AuthState } from "../AuthSlice";
-import { type LoginResponse } from "../models/LoginResponse";
+import { type LoginResponse } from "../models/loginResponse";
 import { AuthApi } from "../AuthApi";
 import type { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 
