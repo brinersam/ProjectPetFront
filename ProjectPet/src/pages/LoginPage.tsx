@@ -12,7 +12,7 @@ import TitleLabel from "../modules/Auth/components/registrationLogin/TitleLabel"
 import BasicButton from "../modules/Auth/components/registrationLogin/BasicButton";
 import BackToMainBtn from "../modules/Auth/components/registrationLogin/BackToMainBtn";
 import { useAppSelector, useAppDispatch } from "../app/reduxTypes";
-import FormTextBox from "../shared/components/form/FormTextBox";
+import FormInputBox from "../shared/components/form/FormInputBox";
 import { PATHS } from "../shared/paths";
 import { authSelectors } from "../modules/Auth/AuthSlice";
 import { loginThunk } from "../modules/Auth/thunks/loginThunk";
@@ -86,7 +86,7 @@ export default function LoginPage() {
               setValue("password", "Aa1#1234567890-123456");
             }}
           ></Button>
-          <FormTextBox<FormFields>
+          <FormInputBox<FormFields>
             disabled={authIsLoading}
             field="email"
             label="Email"
@@ -94,7 +94,7 @@ export default function LoginPage() {
             validation={validateEmailField}
             form={{ errors: errors, register: register }}
           />
-          <FormTextBox<FormFields>
+          <FormInputBox<FormFields>
             disabled={authIsLoading}
             field="password"
             label="Password"
