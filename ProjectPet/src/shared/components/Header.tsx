@@ -72,7 +72,7 @@ export default function Header(): ReactNode {
 
   function HelpAnimalsNavLinkHtml() {
     return (
-      <NavLink to={PATHS.Volunteer}>
+      <NavLink to={PATHS.Registration}>
         <span className="text-white">Помочь животным</span>
       </NavLink>
     );
