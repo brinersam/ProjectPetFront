@@ -4,9 +4,11 @@ import type { ReactNode } from "react";
 export default function BasicButton({
   label,
   elevation = 0,
+  disabled,
 }: {
   label: string | ReactNode;
   elevation?: number;
+  disabled?: boolean;
 }) {
   return (
     <Paper
@@ -17,6 +19,7 @@ export default function BasicButton({
       elevation={elevation}
     >
       <Button
+        disabled={disabled}
         type="submit"
         sx={{
           width: "100%",

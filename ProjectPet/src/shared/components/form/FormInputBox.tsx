@@ -30,25 +30,29 @@ type StyleProps = {
   elevation?: number;
 };
 
-type TextBoxProps<TFields extends FieldValues> = {
+type Props<TFields extends FieldValues> = {
   field: Path<TFields>;
   label?: string | undefined;
   disabled?: boolean;
+  type?: React.HTMLInputTypeAttribute;
   form: FormFuncs<TFields>;
+  required?: boolean;
   hider?: HiderProps;
   validation?: undefined | ((value: string) => string | undefined);
   style?: StyleProps;
 };
 
-export default function FormTextBox<TFields extends FieldValues>({
+export default function FormInputBox<TFields extends FieldValues>({
   field,
   label = undefined,
   disabled = undefined,
+  type = "text",
   form,
+  required = undefined,
   hider = undefined,
   validation = undefined,
   style = undefined,
-}: TextBoxProps<TFields>) {
+}: Props<TFields>) {
   return (
     <Paper
       square={false}
@@ -60,23 +64,17 @@ export default function FormTextBox<TFields extends FieldValues>({
         width: "100%",
       }}
     >
-      <FormControl
-        sx={{
-          width: "100%",
-        }}
-        variant="filled"
-        size="small"
-      >
+      <FormControl sx={{ width: "100%" }} variant="filled" size="small">
         <TextField
           disabled={disabled}
           placeholder={label ?? field}
-          required
+          required={required}
           id={field}
           type={
             hider?.hiderBool === undefined
-              ? "text"
+              ? type
               : hider?.hiderBool
-              ? "text"
+              ? type
               : "password"
           }
           {...form?.register(
@@ -92,6 +90,7 @@ export default function FormTextBox<TFields extends FieldValues>({
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
+                          disabled={disabled}
                           aria-label={
                             hider?.hiderBool
                               ? "hide the password"

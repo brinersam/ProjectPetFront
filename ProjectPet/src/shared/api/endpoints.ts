@@ -19,3 +19,8 @@ export enum PetEndpoints {
   GetPetById = "Pet",
   GetPetsPaginated = "Pet"
 }
+
+export enum VolunteerRequestEndpoints {
+  PostNewRequest = "VolunteerRequests",
+  GetCurrentUserRequests = "VolunteerRequests/byuser"
+}

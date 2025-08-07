@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { loginCases } from "./thunks/loginThunk";
+import type { LoginResponse } from "./models/loginResponse";
 
 export const AuthSliceName = "auth";
 
@@ -27,9 +28,19 @@ const authSlice = createSlice({
         selectUserRoles:(state) => state.roles,
     },
     reducers: {
-        doLogin: (state, {payload}: PayloadAction<{accessToken : string }>) => {
-            state.accessToken = payload.accessToken;
+        doLogin: (state, {payload}: PayloadAction<LoginResponse>) => {
             state.status = "success";
+            state.isAuthenticated = true;
+            state.accessToken = payload.accessToken;
+            state.roles = payload.roles;
+        },
+
+        doLoading: (state) => {
+            state.status = "loading";
+        },
+
+        doIdle: (state) => {
+            state.status = "idle";
         },
 
         doLogout: () => initialState

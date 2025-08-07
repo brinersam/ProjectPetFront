@@ -6,7 +6,7 @@ import VolunteersPage from "../modules/Volunteers/pages/VolunteersPage";
 import FavoritesPage from "../pages/FavoritesPage";
 import LoginPage from "../pages/LoginPage";
 import ProfilePage from "../pages/ProfilePage";
-import RegistrationPage from "../pages/RegistrationPage";
+import RegistrationPage from "../pages/RegistrationPage/RegistrationPage";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
 export const router = createBrowserRouter([

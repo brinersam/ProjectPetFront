@@ -1,8 +1,8 @@
 import type { Envelope } from "../../shared/models/responses";
 import { AuthEndpoints } from "../../shared/api/endpoints";
-import type { LoginResponse } from "./models/LoginResponse";
-import type { LoginRequest } from "./models/requests/LoginRequest";
-import type { RegisterRequest } from "./models/requests/RegisterRequest";
+import type { LoginResponse } from "./models/loginResponse";
+import type { LoginRequest } from "./models/requests/loginRequest";
+import type { RegisterRequest } from "./models/requests/registerRequest";
 import { api } from "../../shared/api/api"
 
 export const AuthApi = api.injectEndpoints({
@@ -22,8 +22,8 @@ export const AuthApi = api.injectEndpoints({
             query: (request) => ({url: AuthEndpoints.Register, body: request, method: "POST"}),
         }),
 
-        refresh: builder.mutation<Envelope<string>, string>({
-            query: (request) => ({url: AuthEndpoints.Register, body: request, method: "POST"}),
+        refresh: builder.mutation<Envelope<LoginResponse>, void>({
+            query: () => ({url: AuthEndpoints.RefreshTokens, method: "POST"}),
         })
     })
 });
